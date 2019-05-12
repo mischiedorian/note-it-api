@@ -22,6 +22,5 @@ public class FeedbackViewModel {
     private String email;
 
     @NotNull
-    @Min(10)
     private String feedback;
 }

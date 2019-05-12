@@ -29,7 +29,7 @@ public class Mapper {
     }
 
     public NoteViewModel convertToNoteViewModel(Note entity) {
-        var viewModel = new NoteViewModel();
+        NoteViewModel viewModel = new NoteViewModel();
         viewModel.setTitle(entity.getTitle());
         viewModel.setId(entity.getId().toString());
         viewModel.setLastModifiedOn(entity.getLastModifiedOn());
@@ -40,14 +40,14 @@ public class Mapper {
     }
 
     public Note convertToNoteEntity(NoteViewModel viewModel) {
-        var notebook = this.notebookRepository.findById(UUID.fromString(viewModel.getNotebookId())).get();
+        Notebook notebook = this.notebookRepository.findById(UUID.fromString(viewModel.getNotebookId())).get();
 
         final Note note = new Note(viewModel.getId(), viewModel.getTitle(), viewModel.getText(), notebook);
         return note;
     }
 
     public NotebookViewModel convertToNotebookViewModel(Notebook entity) {
-        var viewModel = new NotebookViewModel();
+        NotebookViewModel viewModel = new NotebookViewModel();
         viewModel.setId(entity.getId().toString());
         viewModel.setName(entity.getName());
         viewModel.setNbNotes(entity.getNotes().size());

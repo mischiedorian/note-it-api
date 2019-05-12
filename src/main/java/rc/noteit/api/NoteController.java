@@ -7,11 +7,13 @@ import rc.noteit.api.viewmodel.NoteViewModel;
 import rc.noteit.db.NoteRepository;
 import rc.noteit.db.NotebookRepository;
 import rc.noteit.model.Note;
+import rc.noteit.model.Notebook;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,25 +38,21 @@ public class NoteController {
 
     @GetMapping("/all")
     public List<NoteViewModel> all() {
-        var notes = this.noteRepository.findAll();
-
         // map from entity to view model
-        var notesViewModel = notes.stream()
+        return this.noteRepository.findAll().stream()
                 .map(note -> this.mapper.convertToNoteViewModel(note))
                 .collect(Collectors.toList());
-
-        return notesViewModel;
     }
 
     @GetMapping("/byId/{id}")
     public NoteViewModel byId(@PathVariable String id) {
-        var note = this.noteRepository.findById(UUID.fromString(id)).orElse(null);
+        Note note = this.noteRepository.findById(UUID.fromString(id)).orElse(null);
 
         if (note == null) {
             throw new EntityNotFoundException();
         }
 
-        var noteViewModel = this.mapper.convertToNoteViewModel(note);
+        NoteViewModel noteViewModel = this.mapper.convertToNoteViewModel(note);
 
         return noteViewModel;
     }
@@ -63,17 +61,15 @@ public class NoteController {
     public List<NoteViewModel> byNotebook(@PathVariable String notebookId) {
         List<Note> notes = new ArrayList<>();
 
-        var notebook = this.notebookRepository.findById(UUID.fromString(notebookId));
+        Optional<Notebook> notebook = this.notebookRepository.findById(UUID.fromString(notebookId));
         if (notebook.isPresent()) {
             notes = this.noteRepository.findAllByNotebook(notebook.get());
         }
 
         // map to note view model
-        var notesViewModel = notes.stream()
+        return  notes.stream()
                 .map(note -> this.mapper.convertToNoteViewModel(note))
                 .collect(Collectors.toList());
-
-        return notesViewModel;
     }
 
     @PostMapping
@@ -82,7 +78,7 @@ public class NoteController {
             throw new ValidationException();
         }
 
-        var noteEntity = this.mapper.convertToNoteEntity(noteCreateViewModel);
+        Note noteEntity = this.mapper.convertToNoteEntity(noteCreateViewModel);
 
         // save note instance to db
         this.noteRepository.save(noteEntity);
