@@ -40,6 +40,10 @@ public class Mapper {
     }
 
     public Note convertToNoteEntity(NoteViewModel viewModel) {
+        if(viewModel.getId() == null) {
+            viewModel.setId(UUID.randomUUID().toString());
+        }
+
         Notebook notebook = this.notebookRepository.findById(UUID.fromString(viewModel.getNotebookId())).get();
 
         final Note note = new Note(viewModel.getId(), viewModel.getTitle(), viewModel.getText(), notebook);
@@ -56,6 +60,9 @@ public class Mapper {
     }
 
     public Notebook convertToNotebookEntity(NotebookViewModel viewModel) {
+        if(viewModel.getId() == null) {
+            viewModel.setId(UUID.randomUUID().toString());
+        }
         return new Notebook(UUID.fromString(viewModel.getId()), viewModel.getName(), new ArrayList<>());
     }
 }
